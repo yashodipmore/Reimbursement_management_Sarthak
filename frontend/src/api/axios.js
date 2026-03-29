@@ -16,17 +16,11 @@ api.interceptors.request.use((config) => {
 // Auto-refresh on 401
 api.interceptors.response.use(
   (res) => res,
-  async (error) => {
-    if (error.response?.status === 401 && !error.config._retry) {
-      error.config._retry = true;
-      try {
-        const res = await axios.post('/api/auth/refresh', {}, { withCredentials: true });
-        useAuthStore.getState().updateToken(res.data.accessToken);
-        return api(error.config);
-      } catch (refreshError) {
-        useAuthStore.getState().logout();
+  (error) => {
+    if (error.response?.status === 401) {
+      useAuthStore.getState().logout();
+      if (window.location.pathname !== '/login') {
         window.location.href = '/login';
-        return Promise.reject(refreshError);
       }
     }
     return Promise.reject(error);

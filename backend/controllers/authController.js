@@ -13,6 +13,14 @@ const COUNTRY_CURRENCY_OPTIONS = [
   { country: 'United Arab Emirates', currency: 'AED' },
 ];
 
+const resolveCurrency = (country, providedCurrency) => {
+  if (providedCurrency) return providedCurrency;
+  const matched = COUNTRY_CURRENCY_OPTIONS.find(
+    (item) => item.country.toLowerCase() === String(country || '').toLowerCase()
+  );
+  return matched ? matched.currency : 'USD';
+};
+
 const generateToken = (user) => {
   return jwt.sign(
     { id: user.id, role: user.role, email: user.email, company_id: user.company_id },
@@ -39,7 +47,7 @@ const register = async (req, res, next) => {
   try {
     const { companyName, name, email, password, country, currency } = req.body;
 
-    if (!companyName || !name || !email || !password || !country || !currency) {
+    if (!companyName || !name || !email || !password || !country) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -48,7 +56,13 @@ const register = async (req, res, next) => {
       return res.status(409).json({ message: 'Email already registered' });
     }
 
-    const company = await Company.create({ name: companyName, country, currency });
+    const resolvedCurrency = resolveCurrency(country, currency);
+
+    const company = await Company.create({
+      name: companyName,
+      country,
+      currency: resolvedCurrency,
+    });
     const hashedPassword = await bcrypt.hash(password, 12);
 
     const user = await User.create({
@@ -62,6 +76,7 @@ const register = async (req, res, next) => {
     const token = generateToken(user);
     res.status(201).json({
       message: 'Company and admin account created successfully',
+      accessToken: token,
       token,
       user: formatUser(user, company),
     });
@@ -94,7 +109,12 @@ const login = async (req, res, next) => {
     }
 
     const token = generateToken(user);
-    res.json({ message: 'Login successful', token, user: formatUser(user, user.company) });
+    res.json({
+      message: 'Login successful',
+      accessToken: token,
+      token,
+      user: formatUser(user, user.company),
+    });
   } catch (error) {
     next(error);
   }
@@ -122,4 +142,11 @@ const listCountries = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login, getMe, listCountries };
+// GET /api/auth/google
+// Fallback until OAuth provider config is added.
+const googleAuth = (req, res) => {
+  const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+  return res.redirect(`${clientUrl}/login?error=google_auth_not_configured`);
+};
+
+module.exports = { register, login, getMe, listCountries, googleAuth };

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { HiOutlineMail, HiOutlineLockClosed, HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
 import { FcGoogle } from 'react-icons/fc';
 import toast from 'react-hot-toast';
@@ -11,6 +11,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { setAuth } = useAuthStore();
 
   const {
@@ -18,6 +19,14 @@ export default function Login() {
     handleSubmit,
     formState: { errors },
   } = useForm();
+
+  useEffect(() => {
+    const authError = searchParams.get('error');
+    if (authError === 'google_auth_not_configured') {
+      toast.error('Google login is not configured yet. Please use email/password.');
+      navigate('/login', { replace: true });
+    }
+  }, [searchParams, navigate]);
 
   const onSubmit = async (data) => {
     setIsLoading(true);
