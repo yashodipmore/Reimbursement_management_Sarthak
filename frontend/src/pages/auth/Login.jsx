@@ -53,8 +53,8 @@ export default function Login() {
           <span className="auth-pill">Reimbursement Management</span>
           <h1>Track approvals, not spreadsheets.</h1>
           <p>
-            Ek hi jagah par expense submit, approval flow, aur status tracking. Login karo aur apni
-            reimbursement pipeline instant dekh lo.
+            Submit expenses, route approvals, and track status in one place. Sign in to view your
+            reimbursement pipeline instantly.
           </p>
           <ul className="auth-points">
             <li>Role-based dashboards for employee, manager, and admin.</li>

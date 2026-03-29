@@ -35,7 +35,7 @@ export default function Home() {
             </h1>
 
             <p>
-              Ek clean command center for teams: submit expense, route approvals, and close payouts
+              A clean command center for teams: submit expenses, route approvals, and close payouts
               with full clarity. No clutter. No delay. Only sharp execution.
             </p>
 

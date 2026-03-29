@@ -111,19 +111,19 @@ export default function Register() {
           <span className="auth-pill">Company onboarding</span>
           <h1>Create your reimbursement workspace in minutes.</h1>
           <p>
-            First account company admin banega. Uske baad tum team members add karke approval rules
-            set kar sakte ho, aur expenses ko structured workflow me track kar sakte ho.
+            The first account becomes the company admin. After setup, you can add team members,
+            configure approval rules, and track expenses in a structured workflow.
           </p>
           <ul className="auth-points">
-            <li>Country selection se default currency auto-detect ho jayegi.</li>
-            <li>Admin dashboard se users, rules, and approvals control karo.</li>
-            <li>Login credentials aur Google auth dono supported hain.</li>
+            <li>Default currency is auto-detected based on the selected country.</li>
+            <li>Control users, rules, and approvals from the admin dashboard.</li>
+            <li>Both email/password and Google authentication are supported.</li>
           </ul>
         </aside>
 
         <section className="auth-card" aria-labelledby="register-title">
           <h2 id="register-title" className="auth-card-title">Register company</h2>
-          <p className="auth-card-subtitle">Setup details fill karo aur account create karo.</p>
+          <p className="auth-card-subtitle">Fill in the setup details to create your account.</p>
 
           <form onSubmit={handleSubmit(onSubmit)} id="register-form" noValidate>
             <div className="field">
