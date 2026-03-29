@@ -7,8 +7,8 @@ const {
   getTeamExpenses,
   getAllExpenses,
   getExpenseById,
+  scanReceipt,
 } = require('../controllers/expenseController');
-const { scanReceipt } = require('../controllers/ocrController');
 const authMiddleware = require('../middleware/authMiddleware');
 const roleMiddleware = require('../middleware/roleMiddleware');
 const upload = require('../middleware/uploadMiddleware');

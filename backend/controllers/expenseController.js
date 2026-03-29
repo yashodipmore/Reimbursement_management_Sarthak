@@ -2,6 +2,9 @@ const { Op } = require('sequelize');
 const { Expense, User, Approval, Company, ApprovalFlow } = require('../models');
 const { triggerApprovalFlow } = require('../services/approvalService');
 const { convertAmount } = require('../services/currencyService');
+const { analyzeExpenseFraud, extractReceiptData } = require('../services/aiService');
+const fs = require('fs');
+const path = require('path');
 
 // POST /api/expenses
 const submitExpense = async (req, res, next) => {
@@ -18,19 +21,9 @@ const submitExpense = async (req, res, next) => {
 
     let amount_in_company_currency = null;
     try {
-      amount_in_company_currency = await convertAmount(amount, currency, company.currency);
+      amount_in_company_currency = await convertAmount(amount, currency, company.currency || 'USD');
     } catch (e) {
       console.warn('Currency conversion failed:', e.message);
-    }
-
-    // If a specific flow_id is provided, validate it belongs to the company
-    if (flow_id) {
-      const flowExists = await ApprovalFlow.findOne({
-        where: { id: flow_id, company_id: req.user.company_id, is_active: true },
-      });
-      if (!flowExists) {
-        return res.status(400).json({ message: 'Invalid or inactive flow_id for your company' });
-      }
     }
 
     const expense = await Expense.create({
@@ -47,6 +40,11 @@ const submitExpense = async (req, res, next) => {
       status: 'PENDING',
       flow_id: flow_id || null,
     });
+
+    // Trigger AI Analysis in background
+    analyzeExpenseFraud(expense).catch((err) =>
+      console.error('AI analysis error:', err.message)
+    );
 
     triggerApprovalFlow(expense).catch((err) =>
       console.error('Approval flow error:', err.message)
@@ -187,6 +185,31 @@ const getExpenseById = async (req, res, next) => {
   }
 };
 
+// POST /api/expenses/scan (Employee)
+const scanReceipt = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No receipt file provided.' });
+    }
+
+    const receiptData = await extractReceiptData(req.file.path, req.file.mimetype);
+    
+    if (!receiptData) {
+      return res.status(422).json({ message: 'AI could not extract data from this image. Please enter details manually.' });
+    }
+
+    // Include the original file path for future submission
+    receiptData.temp_receipt_url = req.file.path;
+
+    res.json({ 
+      message: 'Receipt scanned successfully!', 
+      extracted_data: receiptData 
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   submitExpense,
   getMyExpenses,
@@ -194,4 +217,5 @@ module.exports = {
   getTeamExpenses,
   getAllExpenses,
   getExpenseById,
+  scanReceipt,
 };
