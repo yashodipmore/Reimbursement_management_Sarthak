@@ -101,7 +101,7 @@ reimbursement-backend/
 ### 2.2 Frontend Folder Structure
 
 ```
-reimbursement-frontend/
+frontend/
 ├── src/
 │   ├── api/
 │   │   └── axios.js            # Axios instance + interceptors
@@ -679,7 +679,7 @@ npm run dev
 ### 9.2 Frontend Setup
 
 ```bash
-cd reimbursement-frontend
+cd frontend
 npm install
 
 # Create .env
