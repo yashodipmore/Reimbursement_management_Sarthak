@@ -6,6 +6,10 @@ const { connectDB } = require('./config/database');
 require('./models/index');
 
 const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+const expenseRoutes = require('./routes/expenseRoutes');
+const approvalRoutes = require('./routes/approvalRoutes');
+const currencyRoutes = require('./routes/currencyRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -19,6 +23,10 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/expenses', expenseRoutes);
+app.use('/api/approvals', approvalRoutes);
+app.use('/api/currency', currencyRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: `Route ${req.method} ${req.url} not found` });
@@ -34,7 +42,5 @@ const startServer = async () => {
     console.log(`Server running on port ${PORT}`);
   });
 };
-
-
 
 startServer();

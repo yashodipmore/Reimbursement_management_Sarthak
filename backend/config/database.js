@@ -15,9 +15,9 @@ const sequelize = new Sequelize(process.env.MYSQL_URL, {
     idle: 10000,
   },
   dialectOptions: {
-    ssl: process.env.NODE_ENV === 'production'
-      ? { rejectUnauthorized: false }
-      : false,
+    connectTimeout: 60000,
+    enableKeepAlive: true,
+    keepAliveInitialDelay: 10000,
   },
 });
 
@@ -25,8 +25,8 @@ const connectDB = async () => {
   try {
     await sequelize.authenticate();
     console.log('MySQL connected via Sequelize');
-    await sequelize.sync({ alter: true });
-    console.log('Database synced');
+    // await sequelize.sync({ alter: false }); 
+    console.log('Database connected');
   } catch (error) {
     console.error('Database connection failed:', error.message);
     process.exit(1);

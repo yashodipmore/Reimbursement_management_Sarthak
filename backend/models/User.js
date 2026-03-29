@@ -9,7 +9,7 @@ const User = sequelize.define('User', {
   },
   company_id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
   },
   name: {
     type: DataTypes.STRING(255),
@@ -32,8 +32,8 @@ const User = sequelize.define('User', {
   manager_id: {
     type: DataTypes.INTEGER,
     allowNull: true,
-    comment: 'FK to users.id — direct manager of this employee',
   },
+
   is_active: {
     type: DataTypes.BOOLEAN,
     defaultValue: true,
