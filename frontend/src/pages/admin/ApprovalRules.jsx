@@ -6,10 +6,14 @@ import api from '../../api/axios';
 export default function ApprovalRules() {
   const [flows, setFlows] = useState([]);
   const [users, setUsers] = useState([]);
+  const [conditionType, setConditionType] = useState('sequential');
   const { register, handleSubmit, reset } = useForm({
     defaultValues: {
       condition_type: 'sequential',
       is_manager_approver: false,
+      approver_id: '',
+      specific_approver_id: '',
+      percentage_threshold: '',
     },
   });
 
@@ -55,17 +59,48 @@ export default function ApprovalRules() {
   }, []);
 
   const onCreate = async (data) => {
-    const approverId = Number(data.approver_id);
+    const approverId = data.approver_id ? Number(data.approver_id) : null;
+    const specificApproverId = data.specific_approver_id ? Number(data.specific_approver_id) : null;
+    const percentageThreshold = data.percentage_threshold
+      ? Number(data.percentage_threshold)
+      : null;
+
+    if (['percentage', 'hybrid'].includes(data.condition_type)) {
+      if (!percentageThreshold || percentageThreshold <= 0 || percentageThreshold > 100) {
+        toast.error('Percentage threshold must be between 1 and 100');
+        return;
+      }
+    }
+
+    if (['specific_approver', 'hybrid'].includes(data.condition_type) && !specificApproverId) {
+      toast.error('Please select a specific approver');
+      return;
+    }
+
     try {
       await api.post('/approvals/flows', {
         name: data.name,
         condition_type: data.condition_type,
         is_manager_approver: Boolean(data.is_manager_approver),
-        specific_approver_id: approverId || null,
-        steps: approverId ? [{ approver_id: approverId, step_order: 1, label: 'Primary Approver' }] : [],
+        percentage_threshold: ['percentage', 'hybrid'].includes(data.condition_type)
+          ? percentageThreshold
+          : null,
+        specific_approver_id: ['specific_approver', 'hybrid'].includes(data.condition_type)
+          ? specificApproverId
+          : null,
+        steps: approverId
+          ? [{ approver_id: approverId, step_order: 1, label: 'Primary Approver' }]
+          : [],
       });
       toast.success('Approval flow created');
-      reset({ condition_type: 'sequential', is_manager_approver: false });
+      reset({
+        condition_type: 'sequential',
+        is_manager_approver: false,
+        approver_id: '',
+        specific_approver_id: '',
+        percentage_threshold: '',
+      });
+      setConditionType('sequential');
       refreshData();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to create flow');
@@ -86,7 +121,11 @@ export default function ApprovalRules() {
 
           <div>
             <label htmlFor="condition-type">Condition Type</label>
-            <select id="condition-type" {...register('condition_type')}>
+            <select
+              id="condition-type"
+              {...register('condition_type')}
+              onChange={(event) => setConditionType(event.target.value)}
+            >
               <option value="sequential">sequential</option>
               <option value="specific_approver">specific_approver</option>
               <option value="percentage">percentage</option>
@@ -103,6 +142,32 @@ export default function ApprovalRules() {
               ))}
             </select>
           </div>
+
+          {['percentage', 'hybrid'].includes(conditionType) && (
+            <div>
+              <label htmlFor="percentage-threshold">Percentage Threshold</label>
+              <input
+                id="percentage-threshold"
+                type="number"
+                min="1"
+                max="100"
+                placeholder="e.g. 60"
+                {...register('percentage_threshold')}
+              />
+            </div>
+          )}
+
+          {['specific_approver', 'hybrid'].includes(conditionType) && (
+            <div>
+              <label htmlFor="specific-approver-id">Specific Approver</label>
+              <select id="specific-approver-id" {...register('specific_approver_id')}>
+                <option value="">Select specific approver</option>
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>{user.name} ({user.role})</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className="check-row">
             <input id="manager-approver" type="checkbox" {...register('is_manager_approver')} />

@@ -90,7 +90,7 @@ export default function Register() {
         country: data.country,
         currency: selectedCountry?.currency,
       });
-      setAuth(res.data.user, res.data.accessToken);
+      setAuth(res.data.user, res.data.accessToken || res.data.token);
       toast.success('Company registered successfully! You are now the admin.');
       navigate('/app/dashboard');
     } catch (err) {

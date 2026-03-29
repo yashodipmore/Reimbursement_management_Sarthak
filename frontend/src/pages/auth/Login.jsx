@@ -32,7 +32,7 @@ export default function Login() {
     setIsLoading(true);
     try {
       const res = await api.post('/auth/login', data);
-      setAuth(res.data.user, res.data.accessToken);
+      setAuth(res.data.user, res.data.accessToken || res.data.token);
       toast.success('Login successful!');
       navigate('/app/dashboard');
     } catch (err) {

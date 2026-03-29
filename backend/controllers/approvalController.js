@@ -18,10 +18,16 @@ const approveOrReject = async (req, res, next) => {
       return res.status(400).json({ message: `Expense is already ${expense.status}` });
     }
 
-    await processApprovalAction(expense, req.user.id, action.toUpperCase(), comment);
+    const requestedAction = action.toUpperCase();
+    const normalizedAction = requestedAction === 'APPROVE' ? 'APPROVED' : 'REJECTED';
+
+    await processApprovalAction(expense, req.user.id, normalizedAction, comment);
 
     const updated = await Expense.findByPk(expenseId);
-    res.json({ message: `Expense ${action.toLowerCase()}d successfully`, expense: updated });
+    res.json({
+      message: `Expense ${normalizedAction.toLowerCase()} successfully`,
+      expense: updated,
+    });
   } catch (error) {
     next(error);
   }
