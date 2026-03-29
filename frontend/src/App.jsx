@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import useAuthStore from './store/authStore';
 
 // Auth Pages
+import Home from './pages/Home';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import OAuthCallback from './pages/auth/OAuthCallback';
@@ -58,6 +59,7 @@ function App() {
 
       <Routes>
         {/* Public Routes */}
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/auth/callback" element={<OAuthCallback />} />
@@ -140,9 +142,7 @@ function App() {
           />
         </Route>
 
-        {/* Redirect root to login */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );
