@@ -1,25 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User, Company } = require('../models');
-
-const COUNTRY_CURRENCY_OPTIONS = [
-  { country: 'India', currency: 'INR' },
-  { country: 'United States', currency: 'USD' },
-  { country: 'United Kingdom', currency: 'GBP' },
-  { country: 'Germany', currency: 'EUR' },
-  { country: 'Canada', currency: 'CAD' },
-  { country: 'Australia', currency: 'AUD' },
-  { country: 'Japan', currency: 'JPY' },
-  { country: 'United Arab Emirates', currency: 'AED' },
-];
-
-const resolveCurrency = (country, providedCurrency) => {
-  if (providedCurrency) return providedCurrency;
-  const matched = COUNTRY_CURRENCY_OPTIONS.find(
-    (item) => item.country.toLowerCase() === String(country || '').toLowerCase()
-  );
-  return matched ? matched.currency : 'USD';
-};
+const { sendWelcomeEmail } = require('../utils/emailService');
+const { getCountries } = require('../services/currencyService');
 
 const generateToken = (user) => {
   return jwt.sign(
@@ -47,7 +30,7 @@ const register = async (req, res, next) => {
   try {
     const { companyName, name, email, password, country, currency } = req.body;
 
-    if (!companyName || !name || !email || !password || !country) {
+    if (!companyName || !name || !email || !password || !country || !currency) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -56,13 +39,7 @@ const register = async (req, res, next) => {
       return res.status(409).json({ message: 'Email already registered' });
     }
 
-    const resolvedCurrency = resolveCurrency(country, currency);
-
-    const company = await Company.create({
-      name: companyName,
-      country,
-      currency: resolvedCurrency,
-    });
+    const company = await Company.create({ name: companyName, country, currency });
     const hashedPassword = await bcrypt.hash(password, 12);
 
     const user = await User.create({
@@ -73,10 +50,11 @@ const register = async (req, res, next) => {
       role: 'admin',
     });
 
+    sendWelcomeEmail(email, name).catch(() => {});
+
     const token = generateToken(user);
     res.status(201).json({
       message: 'Company and admin account created successfully',
-      accessToken: token,
       token,
       user: formatUser(user, company),
     });
@@ -88,7 +66,7 @@ const register = async (req, res, next) => {
 // POST /api/auth/login
 const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ message: 'Email and password are required' });
@@ -108,13 +86,13 @@ const login = async (req, res, next) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    // Role specific check if requested
+    if (role && user.role !== role) {
+      return res.status(403).json({ message: `Access denied: ${role} role required` });
+    }
+
     const token = generateToken(user);
-    res.json({
-      message: 'Login successful',
-      accessToken: token,
-      token,
-      user: formatUser(user, user.company),
-    });
+    res.json({ message: 'Login successful', token, user: formatUser(user, user.company) });
   } catch (error) {
     next(error);
   }
@@ -136,17 +114,11 @@ const getMe = async (req, res, next) => {
 // GET /api/auth/countries
 const listCountries = async (req, res, next) => {
   try {
-    res.json({ countries: COUNTRY_CURRENCY_OPTIONS });
+    const countries = await getCountries();
+    res.json({ countries });
   } catch (error) {
     next(error);
   }
 };
 
-// GET /api/auth/google
-// Fallback until OAuth provider config is added.
-const googleAuth = (req, res) => {
-  const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
-  return res.redirect(`${clientUrl}/login?error=google_auth_not_configured`);
-};
-
-module.exports = { register, login, getMe, listCountries, googleAuth };
+module.exports = { register, login, getMe, listCountries };
