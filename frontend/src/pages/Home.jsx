@@ -64,19 +64,38 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="landing-visual" aria-hidden="true">
+          <div className="landing-visual">
             <div className="curve-square curve-square-main" />
             <div className="curve-square curve-square-accent" />
             <div className="curve-square curve-square-soft" />
 
-            <div className="visual-card">
-              <p className="visual-kicker">Live approval lane</p>
-              <h3>Expense to decision in one motion.</h3>
-              <ul>
-                <li>Submit and auto-route</li>
-                <li>Commented approve or reject</li>
-                <li>Audit trail always visible</li>
-              </ul>
+            <div className="visual-stack">
+              <p className="visual-kicker">Live Product Demo</p>
+
+              <div className="demo-laptop">
+                <div className="demo-laptop-top">
+                  <div className="demo-dots" aria-hidden="true">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                  <p>Reimbursement Management Platform</p>
+                </div>
+
+                <div className="demo-screen">
+                  <iframe
+                    src="https://www.youtube.com/embed/XeGprwzKTQc?autoplay=1&mute=1&loop=1&playlist=XeGprwzKTQc&controls=1&rel=0&modestbranding=1"
+                    title="Reimbursement Management Platform Demo"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+
+              <p className="demo-note">
+                Demo starts automatically in muted mode for smooth browser playback.
+              </p>
             </div>
           </div>
         </section>
