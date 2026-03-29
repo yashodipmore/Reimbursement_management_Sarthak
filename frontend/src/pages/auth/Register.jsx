@@ -81,12 +81,14 @@ export default function Register() {
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
+      const selectedCountry = countries.find((c) => c.name === data.country);
       const res = await api.post('/auth/register', {
         name: data.name,
         email: data.email,
         password: data.password,
         companyName: data.companyName,
         country: data.country,
+        currency: selectedCountry?.currency,
       });
       setAuth(res.data.user, res.data.accessToken);
       toast.success('Company registered successfully! You are now the admin.');
