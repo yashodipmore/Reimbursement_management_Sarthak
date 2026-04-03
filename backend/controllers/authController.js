@@ -50,7 +50,7 @@ const register = async (req, res, next) => {
       role: 'admin',
     });
 
-    sendWelcomeEmail(email, name).catch(() => {});
+    sendWelcomeEmail(email, name).catch(() => { });
 
     const token = generateToken(user);
     res.status(201).json({

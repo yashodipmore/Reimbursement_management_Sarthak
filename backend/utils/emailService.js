@@ -10,9 +10,22 @@ const createTransporter = () => {
   });
 };
 
-const sendWelcomeEmail = async (email, name) => {
+const sendWelcomeEmail = async (email, name, managerEmail) => {
   try {
     const transporter = createTransporter();
+    
+    let managerSection = '';
+    if (managerEmail) {
+      managerSection = `
+        <p>Your account has been assigned to a manager. For your login credentials and initial setup, please contact your manager at:</p>
+        <p><strong>Email:</strong> <a href="mailto:${managerEmail}">${managerEmail}</a></p>
+      `;
+    } else {
+      managerSection = `
+        <p>Please contact your administrator for your login credentials.</p>
+      `;
+    }
+
     await transporter.sendMail({
       from: process.env.MAIL_FROM,
       to: email,
@@ -20,7 +33,8 @@ const sendWelcomeEmail = async (email, name) => {
       html: `
         <h2>Welcome, ${name}!</h2>
         <p>Your account has been created successfully.</p>
-        <p>You can now log in to the Expense Management System.</p>
+        ${managerSection}
+        <p>You can now log in to the Expense Management System using the provided credentials.</p>
         <br />
         <p>Best regards,<br/>Expense Management Team</p>
       `,

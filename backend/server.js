@@ -10,6 +10,7 @@ const userRoutes = require('./routes/userRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
 const approvalRoutes = require('./routes/approvalRoutes');
 const currencyRoutes = require('./routes/currencyRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -27,6 +28,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/approvals', approvalRoutes);
 app.use('/api/currency', currencyRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: `Route ${req.method} ${req.url} not found` });

@@ -1,8 +1,8 @@
 {
   "info": {
-    "name": "Expense Management System (Admin/Manager/Employee)",
+    "name": "Expense Management System (Master Collection)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Finalized 3-tier structure: Admin, Manager, and Employee."
+    "description": "Complete production-ready collection for 3-tier roles. Includes: Admin, Manager, Employee, AI Fraud Detection, AI OCR Scanning, and Advanced Analytics."
   },
   "variable": [
     {
@@ -31,206 +31,172 @@
       "type": "string"
     },
     {
-      "key": "FLOW_ID",
-      "value": "1",
-      "type": "string"
-    },
-    {
       "key": "USER_ID",
-      "value": "3",
+      "value": "",
       "type": "string"
     },
     {
       "key": "MANAGER_USER_ID",
-      "value": "2",
+      "value": "",
       "type": "string"
     }
   ],
   "item": [
     {
-      "name": "Health Check",
-      "request": {
-        "method": "GET",
-        "url": {
-          "raw": "{{BASE_URL}}/health",
-          "host": [
-            "{{BASE_URL}}"
-          ],
-          "path": [
-            "health"
-          ]
-        }
-      }
-    },
-    {
-      "name": "🔐 Auth",
+      "name": "🔐 Auth & Onboarding",
       "item": [
         {
-          "name": "📁 Admin Auth",
-          "item": [
+          "name": "1. Register Admin (First Signup)",
+          "description": "Creates Company + Admin. Token is saved automatically.",
+          "event": [
             {
-              "name": "1. Register (Creates Admin)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "var r = pm.response.json(); if(r.token) pm.collectionVariables.set('ADMIN_TOKEN', r.token);"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var r = pm.response.json(); if(r.token) pm.collectionVariables.set('ADMIN_TOKEN', r.token);"
                 ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"companyName\": \"Acme Corp\",\n  \"name\": \"Admin User\",\n  \"email\": \"admin@acme.com\",\n  \"password\": \"password123\",\n  \"country\": \"India\",\n  \"currency\": \"INR\"\n}"
-                },
-                "url": {
-                  "raw": "{{BASE_URL}}/api/auth/register",
-                  "host": [
-                    "{{BASE_URL}}"
-                  ],
-                  "path": [
-                    "api",
-                    "auth",
-                    "register"
-                  ]
-                }
+                "type": "text/javascript"
               }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyName\": \"LogiCorp\",\n  \"name\": \"Admin User\",\n  \"email\": \"admin@logicorp.com\",\n  \"password\": \"password123\",\n  \"country\": \"India\",\n  \"currency\": \"INR\"\n}"
             },
-            {
-              "name": "2. Login (Admin)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "var r = pm.response.json(); if(r.token) pm.collectionVariables.set('ADMIN_TOKEN', r.token);"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/register",
+              "host": [
+                "{{BASE_URL}}"
               ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"email\": \"admin@acme.com\",\n  \"password\": \"password123\",\n  \"role\": \"admin\"\n}"
-                },
-                "url": {
-                  "raw": "{{BASE_URL}}/api/auth/login",
-                  "host": [
-                    "{{BASE_URL}}"
-                  ],
-                  "path": [
-                    "api",
-                    "auth",
-                    "login"
-                  ]
-                }
-              }
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
             }
-          ]
+          }
         },
         {
-          "name": "📁 Manager Auth",
-          "item": [
+          "name": "2. Login Admin",
+          "event": [
             {
-              "name": "1. Login (Manager)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "var r = pm.response.json(); if(r.token) pm.collectionVariables.set('MANAGER_TOKEN', r.token);"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var r = pm.response.json(); if(r.token) pm.collectionVariables.set('ADMIN_TOKEN', r.token);"
                 ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"email\": \"manager@acme.com\",\n  \"password\": \"password123\",\n  \"role\": \"manager\"\n}"
-                },
-                "url": {
-                  "raw": "{{BASE_URL}}/api/auth/login",
-                  "host": [
-                    "{{BASE_URL}}"
-                  ],
-                  "path": [
-                    "api",
-                    "auth",
-                    "login"
-                  ]
-                }
+                "type": "text/javascript"
               }
             }
-          ]
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@logicorp.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/login",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          }
         },
         {
-          "name": "📁 Employee Auth",
-          "item": [
+          "name": "Login Manager",
+          "event": [
             {
-              "name": "1. Login (Employee)",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "var r = pm.response.json(); if(r.token) pm.collectionVariables.set('EMPLOYEE_TOKEN', r.token);"
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var r = pm.response.json(); if(r.token) pm.collectionVariables.set('MANAGER_TOKEN', r.token);"
                 ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"email\": \"employee@acme.com\",\n  \"password\": \"password123\",\n  \"role\": \"employee\"\n}"
-                },
-                "url": {
-                  "raw": "{{BASE_URL}}/api/auth/login",
-                  "host": [
-                    "{{BASE_URL}}"
-                  ],
-                  "path": [
-                    "api",
-                    "auth",
-                    "login"
-                  ]
-                }
+                "type": "text/javascript"
               }
             }
-          ]
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"manager@logicorp.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/login",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login Employee",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var r = pm.response.json(); if(r.token) pm.collectionVariables.set('EMPLOYEE_TOKEN', r.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"rcpit2028@gmail.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/login",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          }
         }
       ]
     },
@@ -267,7 +233,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"name\": \"Manager User\",\n  \"email\": \"manager@acme.com\",\n  \"password\": \"password123\",\n  \"role\": \"manager\"\n}"
+                  "raw": "{\n  \"name\": \"Jay Manager\",\n  \"email\": \"manager@logicorp.com\",\n  \"password\": \"password123\",\n  \"role\": \"manager\"\n}"
                 },
                 "url": {
                   "raw": "{{BASE_URL}}/api/users",
@@ -282,7 +248,7 @@
               }
             },
             {
-              "name": "Create Employee (assigned to Manager)",
+              "name": "Create Employee (Assigned to Manager)",
               "event": [
                 {
                   "listen": "test",
@@ -308,8 +274,30 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"name\": \"Employee User\",\n  \"email\": \"employee@acme.com\",\n  \"password\": \"password123\",\n  \"role\": \"employee\",\n  \"manager_id\": \"{{MANAGER_USER_ID}}\"\n}"
+                  "raw": "{\n  \"name\": \"John Emp\",\n  \"email\": \"rcpit2028@gmail.com\",\n  \"password\": \"password123\",\n  \"role\": \"employee\",\n  \"manager_id\": \"{{MANAGER_USER_ID}}\"\n}"
                 },
+                "url": {
+                  "raw": "{{BASE_URL}}/api/users",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "List All Users",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ADMIN_TOKEN}}"
+                  }
+                ],
                 "url": {
                   "raw": "{{BASE_URL}}/api/users",
                   "host": [
@@ -325,10 +313,69 @@
           ]
         },
         {
-          "name": "📁 Approval Flows",
+          "name": "📁 AI Dashboard & Analytics",
           "item": [
             {
-              "name": "Create Flow (With Manager Auto-Approval)",
+              "name": "1. Full Company Summary (+Forecast)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ADMIN_TOKEN}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{BASE_URL}}/api/analytics/company",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "api",
+                    "analytics",
+                    "company"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "2. View AI Flagged Fraud",
+              "description": "See all expenses flagged for duplicate or anomalies",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ADMIN_TOKEN}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{BASE_URL}}/api/expenses/all?is_flagged=true",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "api",
+                    "expenses",
+                    "all"
+                  ],
+                  "query": [
+                    {
+                      "key": "is_flagged",
+                      "value": "true"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "📁 Approval Rules",
+          "item": [
+            {
+              "name": "Create Rule (Manager Auto-Approval)",
+              "description": "Forces a rule where Employee's manager must approve first.",
               "request": {
                 "method": "POST",
                 "header": [
@@ -343,7 +390,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"name\": \"Manager + Finance Flow\",\n  \"is_manager_approver\": true,\n  \"steps\": [\n    {\n      \"step_order\": 1,\n      \"approver_id\": 1,\n      \"label\": \"Finance Dept\"\n    }\n  ]\n}"
+                  "raw": "{\n  \"name\": \"Standard Flow\",\n  \"is_manager_approver\": true,\n  \"steps\": [\n    {\n      \"step_order\": 1,\n      \"approver_id\": \"{{ADMIN_USER_ID}}\",\n      \"label\": \"Final Admin Review\"\n    }\n  ]\n}"
                 },
                 "url": {
                   "raw": "{{BASE_URL}}/api/approvals/flows",
@@ -359,29 +406,6 @@
               }
             }
           ]
-        },
-        {
-          "name": "View All Expenses",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{ADMIN_TOKEN}}"
-              }
-            ],
-            "url": {
-              "raw": "{{BASE_URL}}/api/expenses/all",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "expenses",
-                "all"
-              ]
-            }
-          }
         }
       ]
     },
@@ -389,7 +413,7 @@
       "name": "👔 Manager Workspace",
       "item": [
         {
-          "name": "View Team Expenses",
+          "name": "My Team Stats (Analytics)",
           "request": {
             "method": "GET",
             "header": [
@@ -399,20 +423,20 @@
               }
             ],
             "url": {
-              "raw": "{{BASE_URL}}/api/expenses/team",
+              "raw": "{{BASE_URL}}/api/analytics/my-team",
               "host": [
                 "{{BASE_URL}}"
               ],
               "path": [
                 "api",
-                "expenses",
-                "team"
+                "analytics",
+                "my-team"
               ]
             }
           }
         },
         {
-          "name": "Pending Approvals",
+          "name": "Pending for My Action",
           "request": {
             "method": "GET",
             "header": [
@@ -422,20 +446,20 @@
               }
             ],
             "url": {
-              "raw": "{{BASE_URL}}/api/expenses/pending",
+              "raw": "{{BASE_URL}}/api/approvals/pending",
               "host": [
                 "{{BASE_URL}}"
               ],
               "path": [
                 "api",
-                "expenses",
+                "approvals",
                 "pending"
               ]
             }
           }
         },
         {
-          "name": "Approve/Reject Expense",
+          "name": "Action: Approve/Reject",
           "request": {
             "method": "POST",
             "header": [
@@ -472,7 +496,42 @@
       "name": "👤 Employee Workspace",
       "item": [
         {
-          "name": "Submit Expense",
+          "name": "1. 📸 AI Scan Receipt (OCR)",
+          "description": "Upload an image of a receipt to automatically extract details.",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{EMPLOYEE_TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "receipt",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/expenses/ocr",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "expenses",
+                "ocr"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2. Submit Expense",
+          "description": "Use data extracted from OCR to submit here.",
           "request": {
             "method": "POST",
             "header": [
@@ -487,7 +546,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"Travel Expense\",\n  \"amount\": 500,\n  \"currency\": \"USD\",\n  \"category\": \"travel\",\n  \"date\": \"2026-03-29\"\n}"
+              "raw": "{\n  \"title\": \"Bistro Cafe\",\n  \"amount\": 45.2,\n  \"currency\": \"USD\",\n  \"category\": \"food\",\n  \"date\": \"2026-03-29\"\n}"
             },
             "url": {
               "raw": "{{BASE_URL}}/api/expenses",

@@ -71,6 +71,16 @@ const Expense = sequelize.define('Expense', {
     type: DataTypes.INTEGER,
     defaultValue: 1,
   },
+  is_flagged: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    comment: 'Flagged by AI for potential fraud or anomaly',
+  },
+  ai_analysis: {
+    type: DataTypes.JSON,
+    allowNull: true,
+    comment: 'Results from AI analysis (fraud score, duplicate checks, etc.)',
+  },
 }, {
   tableName: 'expenses',
   timestamps: true,

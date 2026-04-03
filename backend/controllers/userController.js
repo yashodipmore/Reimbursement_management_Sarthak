@@ -44,7 +44,14 @@ const createUser = async (req, res, next) => {
       manager_id: manager_id || null,
     });
 
-    sendWelcomeEmail(email, name).catch(() => {});
+    // Fetch manager email if assigned
+    let managerEmail = null;
+    if (manager_id) {
+      const manager = await User.findByPk(manager_id);
+      if (manager) managerEmail = manager.email;
+    }
+
+    sendWelcomeEmail(email, name, managerEmail).catch(() => { });
 
     const { password: _p, ...safeUser } = user.dataValues;
     res.status(201).json({ message: 'User created successfully', user: safeUser });
